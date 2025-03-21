@@ -1,0 +1,29 @@
+services:
+  go-dynamodb-client:
+    container_name: go-dynamodb-client
+    build: .
+    tty: true
+    volumes:
+      - ./src:/src
+    environment:
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - DYNAMO_ENDPOINT=http://${DYNAMO_HOST}:${DYNAMO_PORT}
+
+  dynamodb-admin:
+    container_name: dynamodb-admin
+    image: aaronshaf/dynamodb-admin
+    ports:
+      - "8001:8001"
+    environment:
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - DYNAMO_ENDPOINT=http://${DYNAMO_HOST}:${DYNAMO_PORT}
+
+  dynamodb:
+    container_name: ${DYNAMO_HOST}
+    image: amazon/dynamodb-local
+    ports:
+      - "${DYNAMO_PORT}:8000" #todo note that this port will used in host machine and in other containers
